@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f9f6">
+  <title>Faculty feedback — Kindred</title>
+  <style>
+    :root { --ink:#1c2925; --muted:#697671; --green:#244f3e; --paper:#f8f9f6; --line:#e8ebe4; --serif:Georgia,"Times New Roman",serif; font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; }
+    *{box-sizing:border-box} body{margin:0;background:var(--paper);color:var(--ink)} a{color:inherit;text-decoration:none}
+    .shell{width:min(760px,calc(100% - 40px));margin:0 auto}
+    header{height:76px;display:flex;justify-content:space-between;align-items:center}
+    .brand{display:flex;align-items:center;gap:9px;font-size:18px;font-weight:750;letter-spacing:-.6px}
+    .mark{display:grid;place-items:center;width:32px;height:32px;border-radius:10px;background:var(--green);color:#d7ef9b}
+    .mark svg{width:18px}.back{color:var(--green);font-size:13px;font-weight:650}
+    main{padding:45px 0 75px}.eyebrow{margin:0 0 14px;color:var(--green);text-transform:uppercase;font-size:10px;font-weight:750;letter-spacing:1.4px}
+    h1{margin:0 0 12px;font-family:var(--serif);font-size:clamp(38px,7vw,54px);line-height:1.06;letter-spacing:-1.8px;font-weight:500}
+    .intro{max-width:560px;margin:0 0 28px;color:var(--muted);font-size:14px;line-height:1.7}
+    .notice{display:flex;gap:11px;margin-bottom:23px;padding:14px 16px;border:1px solid #e2e9d8;border-radius:8px;background:#f1f5e9;color:#4f6251;font-size:12px;line-height:1.6}
+    .notice svg{flex:0 0 auto;width:17px;height:17px;margin-top:1px}
+    .card{margin-bottom:17px;padding:24px;border:1px solid var(--line);border-radius:10px;background:#fff}
+    .field{display:block;margin-bottom:18px;color:var(--ink);font-size:13px;font-weight:650}
+    .field:last-child{margin-bottom:0}
+    input[type=text],textarea{display:block;width:100%;margin-top:9px;padding:12px 13px;border:1px solid #dfe4dc;border-radius:6px;background:white;color:var(--ink);font:inherit;font-size:13px}
+    textarea{min-height:82px;resize:vertical}
+    input:focus,textarea:focus{outline:2px solid #9dbf6b;outline-offset:2px}
+    .question{margin:0;padding:17px 0;border-bottom:1px solid #eef0eb}
+    .question:first-child{padding-top:0}.question:last-child{padding-bottom:0;border-bottom:0}
+    .question legend{margin-bottom:12px;color:var(--ink);font-size:13px;font-weight:650}
+    .ratings{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+    .option{position:relative}.option input{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+    .option span{display:grid;place-items:center;gap:4px;min-height:57px;padding:7px 3px;border:1px solid #e8ebe4;border-radius:7px;color:var(--muted);font-size:10px;cursor:pointer}
+    .option b{color:var(--green);font-size:15px}.option input:checked+span{border-color:#9dbf6b;background:#f1f5e9;color:var(--green)}
+    .option input:focus-visible+span{outline:2px solid #9dbf6b;outline-offset:2px}
+    .actions{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-top:21px}
+    .submit{min-height:46px;padding:0 19px;border:0;border-radius:6px;background:var(--green);color:white;font:inherit;font-size:13px;font-weight:650;cursor:pointer}
+    .submit:hover{background:#193d30}.anonymous{color:var(--muted);font-size:10px}
+    .message{margin-bottom:17px;padding:14px 16px;border-radius:7px;font-size:13px;line-height:1.5}
+    .success{border:1px solid #d6e6c5;background:#eff5e7;color:#355a3b}
+    .error{border:1px solid #efd6cf;background:#fbefeb;color:#873d31}.error ul{margin:7px 0 0;padding-left:18px}
+    @media(max-width:520px){.shell{width:calc(100% - 30px)}main{padding-top:32px}.card{padding:18px}.ratings{gap:5px}.option span{font-size:9px}.actions{align-items:flex-start;flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header class="shell">
+    <a class="brand" href="{{ url_for('home') }}"><span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>kindred</a>
+    <a class="back" href="{{ url_for('home') }}">← Back home</a>
+  </header>
+  <main class="shell">
+    <p class="eyebrow">Faculty feedback</p>
+    <h1>Help great teaching grow.</h1>
+    <p class="intro">Share respectful, constructive feedback about your class experience. Your ratings help faculty understand what is working and where students may need more support.</p>
+    <div class="notice">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 3.5 7v5.5c0 4.7 5 7.9 8.5 9.5 3.5-1.6 8.5-4.8 8.5-9.5V7L12 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>This form does not ask for a student ID, name, or email. Optional comments are saved with feedback but never shown in reports. Please do not include names or identifying details. Results are reported only after at least {{ privacy_threshold }} ratings per faculty, subject, and category.</span>
+    </div>
+    {% if submitted %}<div class="message success" role="status">Thank you. Your anonymous feedback has been recorded.</div>{% endif %}
+    {% if errors %}
+      <div class="message error" role="alert">Please check your feedback:
+        <ul>{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul>
+      </div>
+    {% endif %}
+    <form method="post" action="{{ url_for('faculty_feedback_form') }}">
+      <div class="card">
+        <label class="field">Faculty name
+          <input type="text" name="faculty_name" required maxlength="100" value="{{ request.form.get('faculty_name', '') }}" placeholder="Enter faculty name">
+        </label>
+        <label class="field">Subject or course
+          <input type="text" name="subject" required maxlength="100" value="{{ request.form.get('subject', '') }}" placeholder="e.g. Data Structures">
+        </label>
+      </div>
+      <div class="card">
+        {% for category in categories %}
+          {% set category_index = loop.index %}
+          <fieldset class="question">
+            <legend>{{ category }}</legend>
+            <div class="ratings">
+              {% for rating, label in [(1, 'Poor'), (2, 'Needs work'), (3, 'Average'), (4, 'Good'), (5, 'Excellent')] %}
+                <label class="option">
+                  <input type="radio" name="rating_{{ category_index }}" value="{{ rating }}" required {% if request.form.get('rating_' ~ category_index|string) == rating|string %}checked{% endif %}>
+                  <span><b>{{ rating }}</b>{{ label }}</span>
+                </label>
+              {% endfor %}
+            </div>
+          </fieldset>
+        {% endfor %}
+      </div>
+      <div class="card">
+        <label class="field">Optional constructive comment
+          <textarea name="comment" maxlength="500" placeholder="Share a helpful suggestion. Avoid names or identifying details.">{{ request.form.get('comment', '') }}</textarea>
+        </label>
+      </div>
+      <div class="actions">
+        <button class="submit" type="submit">Submit anonymous feedback →</button>
+        <span class="anonymous">No student ID or contact details are requested.</span>
+      </div>
+    </form>
+  </main>
+</body>
+</html>

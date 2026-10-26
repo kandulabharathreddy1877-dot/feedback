@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f9f6">
+  <title>Course insights — Kindred</title>
+  <style>
+    :root { --ink:#1c2925; --muted:#697671; --green:#244f3e; --paper:#f8f9f6; --line:#e8ebe4; --serif:Georgia,"Times New Roman",serif; font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; }
+    *{box-sizing:border-box} body{margin:0;background:var(--paper);color:var(--ink)} a{color:inherit;text-decoration:none}
+    .shell{width:min(1100px,calc(100% - 40px));margin:0 auto}
+    header{height:76px;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:9px;font-size:18px;font-weight:750;letter-spacing:-.6px}
+    .mark{display:grid;place-items:center;width:32px;height:32px;border-radius:10px;background:var(--green);color:#d7ef9b}
+    .mark svg{width:18px}.nav{display:flex;align-items:center;gap:22px;font-size:12px;font-weight:650;color:var(--green)}
+    main{padding:44px 0 78px}.eyebrow{margin:0 0 13px;color:var(--green);text-transform:uppercase;font-size:10px;font-weight:750;letter-spacing:1.4px}
+    h1{margin:0;font-family:var(--serif);font-size:clamp(40px,6vw,58px);line-height:1.05;letter-spacing:-2px;font-weight:500}
+    .intro{max-width:650px;margin:14px 0 27px;color:var(--muted);font-size:13px;line-height:1.7}
+    .privacy{margin:0 0 24px;padding:13px 16px;border:1px solid #e2e9d8;border-radius:7px;background:#f1f5e9;color:#4f6251;font-size:11px;line-height:1.55}
+    .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:16px}
+    .metric,.panel,.empty{border:1px solid var(--line);border-radius:9px;background:#fff}
+    .metric{padding:18px 20px}.metric small{display:block;margin-bottom:10px;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.7px}
+    .metric strong{font-family:var(--serif);font-size:30px;font-weight:500}.metric span{margin-left:7px;color:var(--muted);font-size:11px}
+    .charts{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+    .panel{min-width:0;padding:18px}.panel h2{margin:0 0 13px;font-size:13px;letter-spacing:-.2px}
+    .panel img{display:block;width:100%;height:auto}
+    .table-wrap{overflow-x:auto}
+    table{width:100%;border-collapse:collapse;text-align:left;font-size:11px}
+    th{padding:11px 12px;background:#f7f8f5;color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.6px}
+    td{padding:12px;border-top:1px solid #eef0eb;line-height:1.5}
+    td:first-child{min-width:220px} td.number{white-space:nowrap;font-variant-numeric:tabular-nums}
+    .empty{padding:30px 24px}.empty h2{margin:0 0 9px;font-family:var(--serif);font-size:27px;font-weight:500}
+    .empty p{max-width:600px;margin:0;color:var(--muted);font-size:12px;line-height:1.7}
+    .empty .link{display:inline-block;margin-top:17px;color:var(--green);font-size:12px;font-weight:700}
+    .section-title{margin:0 0 12px;font-size:clamp(30px,4vw,40px);letter-spacing:-1px}
+    footer{display:flex;justify-content:space-between;gap:16px;padding:23px 0 30px;border-top:1px solid var(--line);color:#808982;font-size:10px}
+    @media(max-width:700px){.shell{width:calc(100% - 30px)}main{padding-top:32px}.summary{grid-template-columns:1fr}.charts{grid-template-columns:1fr}.nav{gap:12px}.metric{padding:16px}footer{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header class="shell">
+    <a class="brand" href="{{ url_for('home') }}"><span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>kindred</a>
+    <nav class="nav" aria-label="Main navigation"><a href="{{ url_for('faculty_feedback_form') }}">Faculty feedback →</a><a href="{{ url_for('feedback_form') }}">Course feedback</a><a href="{{ url_for('home') }}">Home</a></nav>
+  </header>
+  <main class="shell">
+    <p class="eyebrow">Course feedback, thoughtfully summarized</p>
+    <h1>Learning starts with listening.</h1>
+    <p class="intro">Explore course ratings and faculty feedback by subject and teaching category. Reports include ratings and response counts only—optional comments are never shown or exported.</p>
+    <p class="privacy">Privacy safeguard: groups with fewer than {{ privacy_threshold }} ratings are left out of summaries and charts. Ratings from those groups are also excluded from course-level comparisons.</p>
+
+    {% if data.has_data %}
+      {% set total_ratings = data.courses | sum(attribute='response_count') %}
+      <section class="summary" aria-label="Feedback summary">
+        <article class="metric"><small>Courses with reportable feedback</small><strong>{{ data.courses | length }}</strong></article>
+        <article class="metric"><small>Ratings included in this report</small><strong>{{ total_ratings }}</strong><span>ratings</span></article>
+        <article class="metric"><small>Average rating across courses</small><strong>{{ "%.2f"|format(data.overall_average) }}</strong><span>out of 5</span></article>
+      </section>
+      <section class="charts" aria-label="Feedback charts">
+        <article class="panel"><h2>Course comparison</h2><img src="{{ url_for('chart_image', chart_type='courses') }}" alt="Bar chart comparing average ratings by course"></article>
+        <article class="panel"><h2>Rating distribution</h2><img src="{{ url_for('chart_image', chart_type='ratings') }}" alt="Bar chart showing how many one-to-five ratings were received"></article>
+      </section>
+      <section class="panel">
+        <h2>Course and question summary</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Course</th><th>Question</th><th>Average / 5</th><th>Ratings</th><th>Rating counts (1–5)</th></tr></thead>
+            <tbody>
+              {% for item in data.questions %}
+                <tr>
+                  <td>{{ item.course_name }}</td><td>{{ item.question_text }}</td>
+                  <td class="number">{{ "%.2f"|format(item.average_rating) }}</td>
+                  <td class="number">{{ item.response_count }}</td>
+                  <td class="number">{{ item.distribution[1] }} / {{ item.distribution[2] }} / {{ item.distribution[3] }} / {{ item.distribution[4] }} / {{ item.distribution[5] }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <p><a class="nav" href="{{ url_for('summary_csv') }}">Download aggregated CSV ↓</a></p>
+    {% else %}
+      <section class="empty">
+        <h2>No reportable ratings yet.</h2>
+        <p>Once a course question has at least {{ privacy_threshold }} ratings, its average and rating distribution will appear here. Smaller groups stay hidden to help protect student privacy. No comments are displayed.</p>
+        <a class="link" href="{{ url_for('feedback_form') }}">Share course feedback →</a>
+      </section>
+    {% endif %}
+
+    <section aria-labelledby="faculty-insights">
+      <p class="eyebrow">Teaching and learning</p>
+      <h2 class="section-title" id="faculty-insights">Faculty feedback</h2>
+      <p class="intro">Ratings are grouped by faculty member, subject, and teaching category. Only groups with at least {{ privacy_threshold }} responses are reported.</p>
+      {% if faculty_data.has_data %}
+        <section class="summary" aria-label="Faculty feedback summary">
+          <article class="metric"><small>Faculty and subject groups</small><strong>{{ faculty_data.faculty | length }}</strong></article>
+          <article class="metric"><small>Faculty ratings included</small><strong>{{ faculty_data.total_ratings }}</strong><span>ratings</span></article>
+          <article class="metric"><small>Average faculty rating</small><strong>{{ "%.2f"|format(faculty_data.overall_average) }}</strong><span>out of 5</span></article>
+        </section>
+        <section class="charts" aria-label="Faculty feedback chart">
+          <article class="panel"><h2>Average ratings by faculty and subject</h2><img src="{{ url_for('chart_image', chart_type='faculty') }}" alt="Bar chart of aggregated faculty ratings by subject"></article>
+        </section>
+        <section class="panel">
+          <h2>Faculty and teaching category summary</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Faculty</th><th>Subject</th><th>Category</th><th>Average / 5</th><th>Responses</th><th>Rating counts (1–5)</th></tr></thead>
+              <tbody>
+                {% for item in faculty_data.categories %}
+                  <tr>
+                    <td>{{ item.faculty_name }}</td><td>{{ item.subject }}</td><td>{{ item.category }}</td>
+                    <td class="number">{{ "%.2f"|format(item.average_rating) }}</td>
+                    <td class="number">{{ item.response_count }}</td>
+                    <td class="number">{{ item.distribution[1] }} / {{ item.distribution[2] }} / {{ item.distribution[3] }} / {{ item.distribution[4] }} / {{ item.distribution[5] }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </section>
+        <p><a class="nav" href="{{ url_for('faculty_summary_csv') }}">Download faculty summary CSV ↓</a></p>
+      {% else %}
+        <section class="empty">
+          <h2>No reportable faculty ratings yet.</h2>
+          <p>Faculty feedback appears after each subject and teaching category has at least {{ privacy_threshold }} ratings. Written comments are never included in reports.</p>
+          <a class="link" href="{{ url_for('faculty_feedback_form') }}">Share anonymous faculty feedback →</a>
+        </section>
+      {% endif %}
+    </section>
+  </main>
+  <footer class="shell"><span>Anonymous feedback. Aggregated insights.</span><span>Groups under {{ privacy_threshold }} ratings are not reported.</span></footer>
+</body>
+</html>
